@@ -30,7 +30,7 @@ resource "aws_security_group" "test-sgp" {
 
 resource "aws_autoscaling_group" "test-ASG" {
     launch_configuration = aws_launch_configuration.test-config.name
-    vpc_zone_identifier = []
+    vpc_zone_identifier = data.aws_subnets.test-subnet.ids
     min_size = 2
     max_size = 4
     tag {
@@ -38,6 +38,15 @@ resource "aws_autoscaling_group" "test-ASG" {
       value="test-ASG"
       propagate_at_launch = true
     }
+}
 
-  
+data "aws_vpc" "test-vpc" {
+    default = true
+}
+data "aws_subnets" "test-subnet"{
+
+    filter {
+      name="vpc-id"
+      values = [ data.aws_vpc.test-vpc.id ]
+    } 
 }
